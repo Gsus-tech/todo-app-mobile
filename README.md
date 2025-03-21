@@ -39,4 +39,6 @@ Example:
 ```EXPO_PUBLIC_API_URL=https://your-api-url.com```
 
 ### 4. And thats it! Now just run the application and test it:**
-bash```npx expo start```
+```bash
+npx expo start
+```
