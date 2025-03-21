@@ -5,11 +5,11 @@ const AboutScreen = () => {
   const WebLink = () => {
     Linking.openURL('https://todo-app-web-five.vercel.app/');
   };
-  
+ 
   const SiteLink = () => {
     Linking.openURL('https://morales-tech.net/');
   };
-
+ 
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
