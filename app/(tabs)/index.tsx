@@ -62,7 +62,6 @@ export default function HomeScreen() {
     }
   };
   
-
   // Group tasks into sections (todo - in progress - completed)
   const groupTasksByStatus = () => {
     const grouped = {
