@@ -1,74 +1,171 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, SectionList, ActivityIndicator, SafeAreaView, StatusBar, Platform } from 'react-native';
+import axios from 'axios';
+import { useColorScheme } from 'react-native';
+import TaskInput from '@/components/TaskInput';
+import TaskItem from '@/components/TaskItem';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+interface Task {
+  _id: string;
+  text: string;
+  status: 'todo' | 'in-progress' | 'completed';
+}
 
 export default function HomeScreen() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL; 
+  const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get<Task[]>(`${apiUrl}`);
+        setTasks(response.data);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTasks();  
+    const interval = setInterval(fetchTasks, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+  
+  
+
+  const addTask = async (taskText: string) => {
+    if (taskText.trim()) {
+      try {
+        const newTask = {
+          text: taskText,
+          status: 'todo',
+        };
+        await axios.post(`${apiUrl}`, newTask);
+        const updatedTasks = await axios.get<Task[]>(`${apiUrl}`);
+        setTasks(updatedTasks.data);
+      } catch (error) {
+        console.error('Error adding task:', error);
+      }
+    }
+  };
+
+  const deleteTask = async (taskId: string) => {
+    try {
+      await axios.delete(`${apiUrl}${taskId}`);
+      const updatedTasks = tasks.filter((task) => task._id !== taskId);
+      setTasks(updatedTasks);
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+  
+
+  // Group tasks into sections (todo - in progress - completed)
+  const groupTasksByStatus = () => {
+    const grouped = {
+      todo: [] as Task[],
+      inProgress: [] as Task[],
+      completed: [] as Task[],
+    };
+
+    tasks.forEach((task) => {
+      if (task.status === 'todo') {
+        grouped.todo.push(task);
+      } else if (task.status === 'in-progress') {
+        grouped.inProgress.push(task);
+      } else if (task.status === 'completed') {
+        grouped.completed.push(task);
+      }
+    });
+
+    return [
+      { title: 'To Do', data: grouped.todo },
+      { title: 'In Progress', data: grouped.inProgress },
+      { title: 'Completed', data: grouped.completed },
+    ];
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text>Loading tasks...</Text>
+      </View>
+    );
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <>
+      <View
+        style={[
+          styles.statusBarContainer,
+          { backgroundColor: colorScheme === 'dark' ? '#333' : '#ffffff' }
+        ]}
+      ></View>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>To-Do App</Text>
+      <TaskInput onAddTask={addTask} />
+      <View style={{ flex: 1 }}>
+        <SectionList
+          sections={groupTasksByStatus()}
+          style={styles.sectionList}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <TaskItem task={{ _id: item._id, text: item.text }} onDelete={() => deleteTask(item._id)} />
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.sectionHeader}>{title}</Text>
+          )}
+          ListEmptyComponent={<Text style={styles.emptyMessage}>No tasks yet</Text>}
+          stickySectionHeadersEnabled={true}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+    </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  statusBarContainer: {
+    height: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight,
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingTop: 10,
+  },
+  sectionList:{
+    flex: 1,
+    marginLeft:10,
+    marginRight:10,
+  },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    backgroundColor: '#e0e0e0',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 5,
+    borderRadius: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  emptyMessage: {
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 20,
   },
 });
