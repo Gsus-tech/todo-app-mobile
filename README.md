@@ -6,7 +6,7 @@ This is a React Native project set up with Expo. it shares the same backend as t
 
 - **Node.js** (Recommended version: 14.x or later)
 - **npm** or **Yarn**
-- **Expo CLI** (You can install it globally if you don't have it yet)
+- **Expo CLI**
 
 To install Expo CLI globally:
 ```bash
@@ -32,12 +32,11 @@ npm install
 
 ### 3. Set Up `.env` File
 
-Create a `.env` file in the root directory of your project. This file will store sensitive or environment-specific variables, such as API keys or app-specific configurations.
+Create a `.env` file in the root directory of your project.
 
-Example `.env` file:
+Example:
 
-```env API_URL=https://your-api-url.com```
+```EXPO_PUBLIC_API_URL=https://your-api-url.com```
 
-Make sure to replace `API_URL` with the actual configuration values you need.
-
-**Note**: You can use `react-native-dotenv` or Expo's built-in support for `.env` files if you're using environment variables directly in the app.
+### 4. And thats it! Now just run the application and test it:**
+bash```npx expo start```
