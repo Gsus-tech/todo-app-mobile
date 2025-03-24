@@ -19,14 +19,14 @@ npm install -g expo-cli
 Start by cloning the repository to your local machine:
 
 ```bash
-git clone https://github.com/your-username/your-repository-name.git
+git clone https://github.com/Gsus-tech/todo-app-mobile
 ```
 ### 2. Install Dependencies
 
 Navigate to the project directory and install the required dependencies:
 
 ```bash 
-cd your-repository-name 
+cd todo-app-mobile 
 npm install
 ```
 
