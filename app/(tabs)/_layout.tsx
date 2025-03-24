@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, View, StatusBar, StyleSheet } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
@@ -11,6 +11,13 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
+    <>
+      <View
+          style={[
+            styles.statusBarContainer,
+            { backgroundColor: colorScheme === 'dark' ? '#333' : '#ffffff' }
+          ]}
+      ></View>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -40,5 +47,12 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  statusBarContainer: {
+    height: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight,
+  },
+})

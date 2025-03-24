@@ -11,10 +11,11 @@ const AboutScreen = () => {
   };
  
   return (
+    <>
+    <Text style={styles.header}>About This App</Text>
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
         {/* Header */}
-        <Text style={styles.header}>About This App</Text>
 
         {/* Content */}
         <ScrollView contentContainerStyle={styles.content}>
@@ -36,6 +37,7 @@ const AboutScreen = () => {
         </ScrollView>
       </View>
     </SafeAreaView>
+    </>
   );
 };
 
@@ -49,11 +51,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
+    backgroundColor: '#333',
+    color: '#fff',
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
-    paddingTop: 10,
+    paddingBottom: 20,
+    paddingTop: 30,
   },
   content: {
     flexGrow: 1,
