@@ -12,10 +12,10 @@ const AboutScreen = () => {
  
   return (
     <>
+        {/* Header */}
     <Text style={styles.header}>About This App</Text>
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
-        {/* Header */}
 
         {/* Content */}
         <ScrollView contentContainerStyle={styles.content}>
