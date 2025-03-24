@@ -25,7 +25,7 @@ const TaskInput: React.FC<TaskInputProps> = ({ onAddTask }) => {
             onChangeText={setTaskText}
             style={[
             styles.input,
-            isFocused ? styles.inputFocused : styles.inputBlurred,  // <-- Apply focus styles
+            isFocused ? styles.inputFocused : styles.inputBlurred,
             ]}        onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)} 
         />
